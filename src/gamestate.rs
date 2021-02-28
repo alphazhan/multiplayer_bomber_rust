@@ -230,8 +230,8 @@ impl GameState {
             let func_args = VariantArray::new_shared();
             unsafe {
                 func_args.push(player_name.clone());
+                new_player.callv("set_player_name", func_args);
             }
-            new_player.callv("set_player_name", func_args);
 
             players.add_child(new_player, false);
 
@@ -243,9 +243,9 @@ impl GameState {
             unsafe {
                 func_args.push(player_id.clone());
                 func_args.push(player_name.clone());
-            }
 
-            score.callv("add_player", func_args);
+                score.callv("add_player", func_args);
+            }
 
             godot_print!("player {} created!", player_id.to_i64());
         }
@@ -326,9 +326,8 @@ impl GameState {
         let func_args = VariantArray::new_shared();
         unsafe {
             func_args.push(error);
+            lobby.callv("game_error", func_args);
         }
-
-        lobby.callv("game_error", func_args);
     }
 
     #[export]
@@ -360,7 +359,9 @@ impl GameState {
         }
 
         let lobby = unsafe { utils::get_lobby(owner.as_ref()) };
-        lobby.callv("refresh_lobby", VariantArray::new_shared());
+        unsafe {
+            lobby.callv("refresh_lobby", VariantArray::new_shared());
+        }
     }
 
     fn unregister_player(&self, owner: TRef<Node>, id: i64) -> () {
@@ -371,12 +372,16 @@ impl GameState {
         }
 
         let lobby = unsafe { utils::get_lobby(owner.as_ref()) };
-        lobby.callv("refresh_lobby", VariantArray::new_shared());
+        unsafe {
+            lobby.callv("refresh_lobby", VariantArray::new_shared());
+        }
     }
 
     fn self_register_player(&self, owner: TRef<Node>) -> () {
         let lobby = unsafe { utils::get_lobby(owner.as_ref()) };
-        lobby.callv("change_to_players_lobby", VariantArray::new_shared());
+        unsafe {
+            lobby.callv("change_to_players_lobby", VariantArray::new_shared());
+        }
 
         let tree = unsafe { utils::get_tree(owner.as_ref()) };
         self.register_player(

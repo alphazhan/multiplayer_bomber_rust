@@ -41,9 +41,9 @@ impl Rock {
         let func_args = VariantArray::new_shared();
         unsafe {
             func_args.push(by_who.clone());
+            score.callv("increase_score", func_args);
         }
 
-        score.callv("increase_score", func_args);
         score.rpc("increase_score", &[by_who.clone()]);
 
         self.do_explosion(owner);

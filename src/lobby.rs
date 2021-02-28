@@ -122,8 +122,11 @@ impl Lobby {
 
         let gamestate = unsafe { utils::get_gamestate_singleton(owner.as_ref()) };
         let func_args = VariantArray::new_shared();
-        unsafe { func_args.push(connect_name.text()) };
-        gamestate.callv("host_game", func_args);
+        unsafe {
+            func_args.push(connect_name.text());
+            gamestate.callv("host_game", func_args);
+        }
+
         self.refresh_lobby(owner);
     }
 
@@ -157,8 +160,8 @@ impl Lobby {
         unsafe {
             func_args.push(ip);
             func_args.push(player_name);
+            gamestate.callv("join_game", func_args);
         }
-        gamestate.callv("join_game", func_args);
     }
 
     fn _on_connection_success(&self, owner: TRef<Control>) -> () {
@@ -262,8 +265,10 @@ impl Lobby {
 
     #[export]
     fn _on_start_pressed(&self, owner: TRef<Control>) -> () {
-        unsafe { utils::get_gamestate_singleton(owner.as_ref()) }
-            .callv("start_game", VariantArray::new_shared());
+        unsafe {
+            utils::get_gamestate_singleton(owner.as_ref())
+                .callv("start_game", VariantArray::new_shared());
+        }
     }
 
     #[export]
