@@ -10,7 +10,7 @@ mod rock;
 
 mod utils;
 
-fn init(handle: InitHandle) -> () {
+fn init(handle: InitHandle) {
     handle.add_class::<gamestate::GameState>();
     handle.add_class::<lobby::Lobby>();
     handle.add_class::<score::Score>();

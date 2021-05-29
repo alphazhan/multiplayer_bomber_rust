@@ -13,7 +13,7 @@ impl Score {
     }
 
     #[export]
-    fn _ready(&mut self, owner: TRef<HBoxContainer>) -> () {
+    fn _ready(&mut self, owner: TRef<HBoxContainer>) {
         self.get_winner(owner).hide();
 
         // Exit Button
@@ -84,7 +84,7 @@ impl Score {
 
     /// Remote (Sync)
     #[export(rpc = "remote")]
-    fn increase_score(&self, owner: TRef<HBoxContainer>, for_who: Variant) -> () {
+    fn increase_score(&self, owner: TRef<HBoxContainer>, for_who: Variant) {
         // Player label
         let p_label = owner.get_node(for_who.to_string()).unwrap();
         let p_label = unsafe { p_label.assume_safe() };
@@ -113,7 +113,7 @@ impl Score {
     }
 
     #[export]
-    fn add_player(&self, owner: TRef<HBoxContainer>, id: Variant, new_player_name: Variant) -> () {
+    fn add_player(&self, owner: TRef<HBoxContainer>, id: Variant, new_player_name: Variant) {
         // Label
         let label = Label::new().into_shared();
         let label = unsafe { label.assume_safe() };
@@ -143,7 +143,7 @@ impl Score {
     }
 
     #[export]
-    unsafe fn _on_exit_game_button_pressed(&self, owner: TRef<HBoxContainer>) -> () {
+    unsafe fn _on_exit_game_button_pressed(&self, owner: TRef<HBoxContainer>) {
         utils::get_gamestate_singleton(owner.as_ref())
             .callv("end_game", VariantArray::new_shared());
     }
@@ -153,9 +153,7 @@ impl Score {
 
         let winner = world.get_node("Winner").unwrap();
         let winner = unsafe { winner.assume_safe() };
-        let winner = winner.cast::<Label>().unwrap();
-
-        return winner;
+        winner.cast::<Label>().unwrap()
     }
 
     fn get_rocks(&self, owner: TRef<HBoxContainer>) -> TRef<Node2D> {
@@ -163,8 +161,6 @@ impl Score {
 
         let rocks = world.get_node("Rocks").unwrap();
         let rocks = unsafe { rocks.assume_safe() };
-        let rocks = rocks.cast::<Node2D>().unwrap();
-
-        return rocks;
+        rocks.cast::<Node2D>().unwrap()
     }
 }

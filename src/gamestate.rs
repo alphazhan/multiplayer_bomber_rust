@@ -44,7 +44,7 @@ impl GameState {
     }
 
     #[export]
-    fn _ready(&mut self, owner: TRef<Node>) -> () {
+    fn _ready(&mut self, owner: TRef<Node>) {
         self.preload_instances();
 
         if let Err(e) = self.connect_network_signals(owner) {
@@ -56,7 +56,7 @@ impl GameState {
     }
 
     #[export]
-    fn host_game(&mut self, owner: TRef<Node>, player_name: Variant) -> () {
+    fn host_game(&mut self, owner: TRef<Node>, player_name: Variant) {
         godot_print!("Hosting game...");
 
         let tree = unsafe { utils::get_tree(owner.as_ref()) };
@@ -79,7 +79,7 @@ impl GameState {
     }
 
     #[export]
-    fn join_game(&mut self, owner: TRef<Node>, ip: Variant, player_name: Variant) -> () {
+    fn join_game(&mut self, owner: TRef<Node>, ip: Variant, player_name: Variant) {
         godot_print!("Joining to the game");
 
         let tree = unsafe { utils::get_tree(owner.as_ref()) };
@@ -146,7 +146,7 @@ impl GameState {
     /// # The First Step
     /// Rpc-ing `create_world` to all clients and to server
     #[export]
-    fn start_game(&mut self, owner: TRef<Node>) -> () {
+    fn start_game(&mut self, owner: TRef<Node>) {
         // Tree
         let tree = unsafe { utils::get_tree(owner.as_ref()) };
 
@@ -159,7 +159,7 @@ impl GameState {
     /// # Second step
     /// Creating world
     #[export(rpc = "remote")]
-    fn create_world(&self, owner: TRef<Node>) -> () {
+    fn create_world(&self, owner: TRef<Node>) {
         godot_print!("creating world...");
 
         // let tree = unsafe { utils::get_tree(owner.as_ref()) };
@@ -260,7 +260,7 @@ impl GameState {
 
     /// Callback from SceneTree.
     #[export]
-    fn _player_connected(&self, owner: TRef<Node>, id: i64) -> () {
+    fn _player_connected(&self, owner: TRef<Node>, id: i64) {
         godot_print!("New player (id: {}) connected", id);
 
         // Tree
@@ -281,11 +281,11 @@ impl GameState {
     /// Callback from SceneTree.
     /// player disconnected
     #[export]
-    fn _player_disconnected(&self, owner: TRef<Node>, id: i64) -> () {
+    fn _player_disconnected(&self, owner: TRef<Node>, id: i64) {
         godot_print!("Player (id: {}) disconnected", id);
 
         unsafe {
-            if utils::get_lobby(owner.as_ref()).is_visible() == false {
+            if !utils::get_lobby(owner.as_ref()).is_visible() {
                 self.game_error(owner, "Player disconnected");
             }
         }
@@ -296,7 +296,7 @@ impl GameState {
     /// Callback from SceneTree, only for clients (not server).
     /// We just connected to a server
     #[export]
-    fn _connected_ok(&self, owner: TRef<Node>) -> () {
+    fn _connected_ok(&self, owner: TRef<Node>) {
         godot_print!("user connected to the server successfully");
 
         self.self_register_player(owner);
@@ -304,17 +304,17 @@ impl GameState {
 
     /// Callback from SceneTree, only for clients (not server).
     #[export]
-    fn _server_disconnected(&self, owner: TRef<Node>) -> () {
+    fn _server_disconnected(&self, owner: TRef<Node>) {
         self.game_error(owner, "Server disconnected");
     }
 
     /// Callback from SceneTree, only for clients (not server).
     #[export]
-    fn _connected_fail(&self, owner: TRef<Node>) -> () {
+    fn _connected_fail(&self, owner: TRef<Node>) {
         self.game_error(owner, "User connected to the server failure");
     }
 
-    fn game_error(&self, owner: TRef<Node>, error: &str) -> () {
+    fn game_error(&self, owner: TRef<Node>, error: &str) {
         let tree = unsafe { utils::get_tree(owner.as_ref()) };
         tree.set_network_peer(Null::null()); // Remove peer
 
@@ -331,7 +331,7 @@ impl GameState {
     }
 
     #[export]
-    fn end_game(&self, owner: TRef<Node>) -> () {
+    fn end_game(&self, owner: TRef<Node>) {
         let tree = unsafe { utils::get_tree(owner.as_ref()) };
         tree.set_network_peer(Null::null()); // Remove peer
 
@@ -347,7 +347,7 @@ impl GameState {
 
     // Register the new player
     #[export(rpc = "remote")]
-    fn register_player(&self, owner: TRef<Node>, id: Variant, p_name: Variant) -> () {
+    fn register_player(&self, owner: TRef<Node>, id: Variant, p_name: Variant) {
         godot_print!(
             "register player {} (id:{})",
             p_name.to_string(),
@@ -364,7 +364,7 @@ impl GameState {
         }
     }
 
-    fn unregister_player(&self, owner: TRef<Node>, id: i64) -> () {
+    fn unregister_player(&self, owner: TRef<Node>, id: i64) {
         godot_print!("unregister player id:{}", id);
 
         unsafe {
@@ -377,7 +377,7 @@ impl GameState {
         }
     }
 
-    fn self_register_player(&self, owner: TRef<Node>) -> () {
+    fn self_register_player(&self, owner: TRef<Node>) {
         let lobby = unsafe { utils::get_lobby(owner.as_ref()) };
         unsafe {
             lobby.callv("change_to_players_lobby", VariantArray::new_shared());
@@ -392,7 +392,7 @@ impl GameState {
     }
 
     /// Preloading `PackedScene` instances (World, Player)
-    fn preload_instances(&mut self) -> () {
+    fn preload_instances(&mut self) {
         // World
         let world_scene = ResourceLoader::godot_singleton()
             .load("res://scenes/World/World.tscn", "PackedScene", false)

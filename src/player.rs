@@ -1,3 +1,5 @@
+use std::f64::consts;
+
 use crate::utils;
 use gdnative::api::*;
 use gdnative::prelude::*;
@@ -32,12 +34,12 @@ impl Player {
     }
 
     #[export]
-    fn _ready(&mut self, _owner: TRef<KinematicBody2D>) -> () {
+    fn _ready(&mut self, _owner: TRef<KinematicBody2D>) {
         self.preload_instances();
     }
 
     #[export]
-    fn _physics_process(&mut self, owner: TRef<KinematicBody2D>, _delta: f64) -> () {
+    fn _physics_process(&mut self, owner: TRef<KinematicBody2D>, _delta: f64) {
         if owner.is_network_master() {
             let mut motion = Vector2::zero();
 
@@ -115,7 +117,7 @@ impl Player {
                 Vector2::new(0.0, 1.0),
                 false,
                 4,
-                0.785398,
+                consts::FRAC_PI_4,
                 true,
             );
         }
@@ -138,7 +140,7 @@ impl Player {
         owner: TRef<KinematicBody2D>,
         position: Variant,
         current_anim: Variant,
-    ) -> () {
+    ) {
         owner.set_position(position.to_vector2());
         unsafe {
             self.get_animation(owner)
@@ -165,7 +167,7 @@ impl Player {
         bomb_name: Variant,
         bomb_pos: Variant,
         network_unique_id: Variant,
-    ) -> () {
+    ) {
         let bomb_packed_scene = unsafe { self.preload_bomb.assume_safe() };
 
         // Bomb
@@ -201,7 +203,7 @@ impl Player {
     }
 
     #[export]
-    fn set_player_name(&self, owner: TRef<KinematicBody2D>, player_name: Variant) -> () {
+    fn set_player_name(&self, owner: TRef<KinematicBody2D>, player_name: Variant) {
         // `nickname` Label
         let nickname = owner.get_node("nickname").unwrap();
         let nickname = unsafe { nickname.assume_safe() };
@@ -211,7 +213,7 @@ impl Player {
         nickname.set_text(player_name.to_godot_string());
     }
 
-    fn preload_instances(&mut self) -> () {
+    fn preload_instances(&mut self) {
         let bomb_scene = ResourceLoader::godot_singleton()
             .load("res://scenes/Bomb/Bomb.tscn", "PackedScene", false)
             .unwrap();

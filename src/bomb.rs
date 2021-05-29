@@ -29,7 +29,7 @@ impl Bomb {
     }
 
     #[export]
-    fn _on_bomb_body_entered(&self, _owner: TRef<Area2D>, body: Variant) -> () {
+    fn _on_bomb_body_entered(&self, _owner: TRef<Area2D>, body: Variant) {
         // Body
         let body = body.try_to_object::<Node>().unwrap();
         let body = unsafe { body.assume_safe() };
@@ -55,7 +55,7 @@ impl Bomb {
     }
 
     #[export(rpc = "master")]
-    fn explode(&self, owner: TRef<Area2D>) -> () {
+    fn explode(&self, owner: TRef<Area2D>) {
         if !owner.is_network_master() {
             godot_warn!("`explode` function is only available for `master`!");
             return;

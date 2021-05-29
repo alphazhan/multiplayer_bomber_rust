@@ -52,14 +52,14 @@ impl Lobby {
     }
 
     #[export]
-    fn _ready(&mut self, owner: TRef<Control>) -> () {
+    fn _ready(&mut self, owner: TRef<Control>) {
         self.update_child_nodes(owner);
         if let Err(e) = self.connect_signals(owner) {
             godot_error!("`Lobby` => GodotError at `connect_signals` function: {}", e);
         }
     }
 
-    fn update_child_nodes(&mut self, owner: TRef<Control>) -> () {
+    fn update_child_nodes(&mut self, owner: TRef<Control>) {
         self.connect = owner.get_node("Connect");
         self.connect_name = owner.get_node("Connect/Name");
         self.connect_error_label = owner.get_node("Connect/ErrorLabel");
@@ -105,7 +105,7 @@ impl Lobby {
     }
 
     #[export]
-    fn _on_host_pressed(&self, owner: TRef<Control>) -> () {
+    fn _on_host_pressed(&self, owner: TRef<Control>) {
         let connect = self.get_connect();
         let connect_name = self.get_connect_name();
         let connect_error_label = self.get_connect_error_label();
@@ -131,7 +131,7 @@ impl Lobby {
     }
 
     #[export]
-    fn _on_join_pressed(&self, owner: TRef<Control>) -> () {
+    fn _on_join_pressed(&self, owner: TRef<Control>) {
         let gamestate = unsafe { utils::get_gamestate_singleton(owner.as_ref()) };
 
         let connect_name = self.get_connect_name();
@@ -164,7 +164,7 @@ impl Lobby {
         }
     }
 
-    fn _on_connection_success(&self, owner: TRef<Control>) -> () {
+    fn _on_connection_success(&self, owner: TRef<Control>) {
         let connect = self.get_connect();
 
         let players = self.get_players();
@@ -175,7 +175,7 @@ impl Lobby {
         owner.emit_signal("connection_succeeded", &[]);
     }
 
-    fn _on_connection_failed(&self, _owner: TRef<Control>) -> () {
+    fn _on_connection_failed(&self, _owner: TRef<Control>) {
         let connect_host = self.get_connect_host();
         let connect_join = self.get_connect_join();
         let connect_error_label = self.get_connect_error_label();
@@ -186,7 +186,7 @@ impl Lobby {
     }
 
     #[export]
-    fn game_ended(&self, owner: TRef<Control>) -> () {
+    fn game_ended(&self, owner: TRef<Control>) {
         let connect = self.get_connect();
         let players = self.get_players();
         let players_list = self.get_players_list();
@@ -204,7 +204,7 @@ impl Lobby {
     }
 
     #[export]
-    fn game_error(&self, owner: TRef<Control>, error: String) -> () {
+    fn game_error(&self, owner: TRef<Control>, error: String) {
         godot_print!("Game error: {}", error);
 
         self.game_ended(owner);
@@ -220,7 +220,7 @@ impl Lobby {
     }
 
     #[export]
-    fn refresh_lobby(&self, owner: TRef<Control>) -> () {
+    fn refresh_lobby(&self, owner: TRef<Control>) {
         godot_print!("Refreshing lobby...");
 
         let tree = unsafe { utils::get_tree(owner.as_ref()) };
@@ -238,7 +238,7 @@ impl Lobby {
         for (p_id, p_name) in gamestate_players.iter() {
             godot_print!("p: {}", p_name.to_string());
             players_list.add_item(
-                p_name.try_to_string().unwrap_or("???".to_string())
+                p_name.try_to_string().unwrap_or_else(|| "???".to_string())
                     + (if p_id.to_i64() == tree.get_network_unique_id() {
                         " (You)"
                     } else {
@@ -255,7 +255,7 @@ impl Lobby {
     }
 
     #[export]
-    fn change_to_players_lobby(&self, _owner: TRef<Control>) -> () {
+    fn change_to_players_lobby(&self, _owner: TRef<Control>) {
         let connect = self.get_connect();
         let players = self.get_players();
 
@@ -264,7 +264,7 @@ impl Lobby {
     }
 
     #[export]
-    fn _on_start_pressed(&self, owner: TRef<Control>) -> () {
+    fn _on_start_pressed(&self, owner: TRef<Control>) {
         unsafe {
             utils::get_gamestate_singleton(owner.as_ref())
                 .callv("start_game", VariantArray::new_shared());
@@ -272,7 +272,7 @@ impl Lobby {
     }
 
     #[export]
-    fn _on_find_public_ip_pressed(&self, _owner: TRef<Control>) -> () {
+    fn _on_find_public_ip_pressed(&self, _owner: TRef<Control>) {
         godot_print!("https://icanhazip.com/");
     }
 
@@ -281,80 +281,60 @@ impl Lobby {
     fn get_connect(&self) -> TRef<Panel> {
         let connect = self.connect.unwrap();
         let connect = unsafe { connect.assume_safe() };
-        let connect = connect.cast::<Panel>().unwrap();
-
-        return connect;
+        connect.cast::<Panel>().unwrap()
     }
 
     fn get_connect_name(&self) -> TRef<LineEdit> {
         let connect_name = self.connect_name.unwrap();
         let connect_name = unsafe { connect_name.assume_safe() };
-        let connect_name = connect_name.cast::<LineEdit>().unwrap();
-
-        return connect_name;
+        connect_name.cast::<LineEdit>().unwrap()
     }
 
     fn get_connect_error_label(&self) -> TRef<Label> {
         let connect_error_label = self.connect_error_label.unwrap();
         let connect_error_label = unsafe { connect_error_label.assume_safe() };
-        let connect_error_label = connect_error_label.cast::<Label>().unwrap();
-
-        return connect_error_label;
+        connect_error_label.cast::<Label>().unwrap()
     }
 
     fn get_connect_address(&self) -> TRef<LineEdit> {
         let connect_address = self.connect_address.unwrap();
         let connect_address = unsafe { connect_address.assume_safe() };
-        let connect_address = connect_address.cast::<LineEdit>().unwrap();
-
-        return connect_address;
+        connect_address.cast::<LineEdit>().unwrap()
     }
 
     fn get_connect_host(&self) -> TRef<Button> {
         let connect_host = self.connect_host.unwrap();
         let connect_host = unsafe { connect_host.assume_safe() };
-        let connect_host = connect_host.cast::<Button>().unwrap();
-
-        return connect_host;
+        connect_host.cast::<Button>().unwrap()
     }
 
     fn get_connect_join(&self) -> TRef<Button> {
         let connect_join = self.connect_join.unwrap();
         let connect_join = unsafe { connect_join.assume_safe() };
-        let connect_join = connect_join.cast::<Button>().unwrap();
-
-        return connect_join;
+        connect_join.cast::<Button>().unwrap()
     }
 
     fn get_error_dialog(&self) -> TRef<AcceptDialog> {
         let error_dialog = self.error_dialog.unwrap();
         let error_dialog = unsafe { error_dialog.assume_safe() };
-        let error_dialog = error_dialog.cast::<AcceptDialog>().unwrap();
-
-        return error_dialog;
+        error_dialog.cast::<AcceptDialog>().unwrap()
     }
 
     fn get_players(&self) -> TRef<Panel> {
         let players = self.players.unwrap();
         let players = unsafe { players.assume_safe() };
-        let players = players.cast::<Panel>().unwrap();
-
-        return players;
+        players.cast::<Panel>().unwrap()
     }
 
     fn get_players_list(&self) -> TRef<ItemList> {
         let players_list = self.players_list.unwrap();
         let players_list = unsafe { players_list.assume_safe() };
-        let players_list = players_list.cast::<ItemList>().unwrap();
-
-        return players_list;
+        players_list.cast::<ItemList>().unwrap()
     }
 
     fn get_players_start(&self) -> TRef<Button> {
         let players_start = self.players_start.unwrap();
         let players_start = unsafe { players_start.assume_safe() };
-        let players_start = players_start.cast::<Button>().unwrap();
-
-        return players_start;
+        players_start.cast::<Button>().unwrap()
     }
 }
