@@ -1,8 +1,10 @@
 [package]
 name = "multiplayer_bomber_rust"
-version = "0.1.0"
-authors = ["HOME"]
+version = "0.1.1"
+authors = [ "alzhann07@gmail.com" ]
 edition = "2018"
+readme = "README.md"
+repository = "https://github.com/alphazhan/multiplayer_bomber_rust"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
